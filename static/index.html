@@ -41,11 +41,12 @@ btn.addEventListener("click", async () => {
     resultBox.innerHTML = "Checking...";
 
     try {
-        const response = await fetch("http://localhost:5000/check", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username })
-        });
+        const response = await fetch("https://portfoliotools-two.vercel.app/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username })
+    });
+
 
         if (!response.ok) throw new Error("Network response was not ok");
 
