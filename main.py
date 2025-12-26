@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from crawler import check_username
+from fastapi.responses import FileResponse
 
 app = FastAPI()
 
@@ -17,6 +18,10 @@ app.add_middleware(
 class UsernameRequest(BaseModel):
     username: str
 
+# Serve HTML frontend
+@app.get("/")
+def home():
+    return FileResponse("static/index.html")
 
 
 @app.post("/check")
