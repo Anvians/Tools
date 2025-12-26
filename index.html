@@ -4,11 +4,17 @@
     <meta charset="UTF-8">
     <title>Username Checker</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; }
-        input, button { padding: 8px; font-size: 16px; }
-        .result { margin-top: 20px; }
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: darkslategrey; text-align: center;}
+        input, button { padding: 8px; font-size: 16px; border-radius: 10px;}
+        .result { margin-top: 20px; font-size: 15px;}
         .card { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
-        .card a { color: blue; text-decoration: none; }
+        .card a { color: rgb(23, 23, 44); text-decoration: none; }
+        p{
+            color: cadetblue;
+        }
+        h1{
+            color: aliceblue;
+        }
     </style>
 </head>
 <body>
@@ -16,7 +22,8 @@
 <h1>Username Checker</h1>
 <input id="userName" placeholder="Enter the Username" />
 <button id="checkBtn">Check</button>
-
+<p >Some of the success links might give you user not found, Sorry for that we are workin on it,
+</p>
 <div class="result" id="result"></div>
 
 <script>

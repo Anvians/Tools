@@ -11,6 +11,7 @@ SITES = {
             "This account doesn’t exist",
             "Try searching for another"
         ]
+        
     },
     "Instagram": {
         "url": "https://www.instagram.com/{username}/",
@@ -38,16 +39,29 @@ def check_username(username: str):
     for site, data in SITES.items():
         url = data["url"].format(username=username)
         try:
-            r = requests.get(url, headers=headers, timeout=6)
-            page_text = r.text.lower()
+            r = requests.get(url, headers=headers, timeout=6, allow_redirects=True)
+            # Normalize page text
+            page_text = r.text.lower().replace("’", "'")  
 
+            # Basic logic: if status 200 and not showing "not found" phrases
             if r.status_code == 200:
-                if not any(p.lower() in page_text for p in data["not_found_phrases"]):
+                # Some sites redirect invalid users, check final URL
+                final_url = r.url.lower()
+                expected_url = url.lower()
+                not_found = any(p.lower() in page_text for p in data["not_found_phrases"])
+                
+                if not_found or final_url != expected_url:
+                    print(f"[-] {site}: Not Found")
+                else:
+                    print(f"[FOUND] {site}: {url}")
                     found.append({
                         "site": site,
                         "url": url
                     })
-        except requests.exceptions.RequestException:
-            pass
+            else:
+                print(f"[-] {site}: Not Found")
+
+        except requests.exceptions.RequestException as e:
+            print(f"[!] {site}: Request Failed ({e})")
 
     return found
