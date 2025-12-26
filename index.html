@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Username Checker</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        input, button { padding: 8px; font-size: 16px; }
+        .result { margin-top: 20px; }
+        .card { border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; }
+        .card a { color: blue; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<h1>Username Checker</h1>
+<input id="userName" placeholder="Enter the Username" />
+<button id="checkBtn">Check</button>
+
+<div class="result" id="result"></div>
+
+<script>
+const usernameInput = document.getElementById("userName");
+const btn = document.getElementById("checkBtn");
+const resultBox = document.getElementById("result");
+
+btn.addEventListener("click", async () => {
+    const username = usernameInput.value.trim();
+    if (!username) {
+        alert("Please enter a username");
+        return;
+    }
+
+    resultBox.innerHTML = "Checking...";
+
+    try {
+        const response = await fetch("http://localhost:5000/check", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username })
+        });
+
+        if (!response.ok) throw new Error("Network response was not ok");
+
+        const data = await response.json();
+
+        if (data.found.length === 0) {
+            resultBox.innerHTML = "No profiles found!";
+        } else {
+            resultBox.innerHTML = "";
+            data.found.forEach(site => {
+                const card = document.createElement("div");
+                card.classList.add("card");
+                card.innerHTML = `<strong>${site.site}</strong>: <a href="${site.url}" target="_blank">${site.url}</a>`;
+                resultBox.appendChild(card);
+            });
+        }
+
+    } catch (error) {
+        resultBox.innerHTML = "Error: " + error.message;
+    }
+});
+</script>
+
+</body>
+</html>

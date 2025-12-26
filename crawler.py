@@ -1,17 +1,9 @@
-import sys
 import requests
 
-# Check if username is provided
-if len(sys.argv) < 2:
-    print("Usage: python tool.py <username>")
-    sys.exit(1)
-
-username = sys.argv[1]
 headers = {
     "User-Agent": "Mozilla/5.0 (OSINT Username Checker)"
 }
 
-# Websites and their profile URL patterns
 SITES = {
     "Twitter": {
         "url": "https://twitter.com/{username}",
@@ -40,29 +32,22 @@ SITES = {
     }
 }
 
-print(f"\n[+] Checking username: {username}\n")
+def check_username(username: str):
+    found = []
 
-found = []
+    for site, data in SITES.items():
+        url = data["url"].format(username=username)
+        try:
+            r = requests.get(url, headers=headers, timeout=6)
+            page_text = r.text.lower()
 
-for site, data in SITES.items():
-    url = data["url"].format(username=username)
+            if r.status_code == 200:
+                if not any(p.lower() in page_text for p in data["not_found_phrases"]):
+                    found.append({
+                        "site": site,
+                        "url": url
+                    })
+        except requests.exceptions.RequestException:
+            pass
 
-    try:
-        r = requests.get(url, headers=headers, timeout=6)
-        page_text = r.text.lower()
-
-        if r.status_code == 200:
-            if any(phrase.lower() in page_text for phrase in data["not_found_phrases"]):
-                print(f"[-] {site}: Not Found")
-            else:
-                print(f"[FOUND] {site}: {url}")
-                found.append(url)
-        else:
-            print(f"[-] {site}: Not Found")
-
-    except requests.exceptions.RequestException:
-        print(f"[!] {site}: Request Failed")
-
-print("\n[+] Final Results:")
-for profile in found:
-    print(profile)
+    return found
